@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import { Switch, withRouter, Route, Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-
 import NavBar from './Header/HeaderComponent';
 import Home from './Home/HomeComponent';
 import Linkage from './Linkage/Linkage';
