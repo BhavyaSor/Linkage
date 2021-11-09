@@ -8,8 +8,6 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  useMediaQuery,
-  useTheme,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import FolderIcon from '@material-ui/icons/Folder';
@@ -20,6 +18,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import NoteIcon from '@material-ui/icons/NoteOutlined';
 
 import ViewDetails from './ViewDetails';
 import ConfirmDelete from './ConfirmDelete';
@@ -59,24 +58,18 @@ const startIcon = (sharedWith, color, category) => {
     ) : (
       <FolderSharedIcon htmlColor={color || defaultColor} />
     )
-  ) : (
+  ) : category == 2 ? (
     <LinkIcon htmlColor={color || defaultColor} />
+  ) : (
+    <NoteIcon htmlColor={color || defaultColor} />
   );
 };
 
 const ItemLinkage = (props) => {
   const linkageLoading = useSelector((state) => state.linkage.loading);
   const userId = useSelector((state) => state.user.user?._id);
-  const {
-    sharedWith,
-    category,
-    name,
-    color,
-    _id,
-    objData,
-    parent,
-    owner,
-  } = props.linkage;
+  const { sharedWith, category, name, color, _id, objData, parent, owner } =
+    props.linkage;
   const css = itemStyles();
 
   const [anchorMenu, setAnchorMenu] = useState(null);
@@ -95,7 +88,10 @@ const ItemLinkage = (props) => {
   const handleClick = () => {
     if (category <= 1) {
       props.routerHistory.push(`/linkage/${_id}`);
-    } else window.open(objData, '_blank', 'noopener');
+    } else if (category === 2) window.open(objData, '_blank', 'noopener');
+    else {
+      setViewDetails(true);
+    }
   };
 
   const handleShareClick = (email, operation) => {
@@ -112,11 +108,7 @@ const ItemLinkage = (props) => {
 
   return (
     <>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        className={css.root}
-      >
+      <Box display="flex" justifyContent="space-between" className={css.root}>
         <Box
           display="flex"
           justifyContent="flex-start"

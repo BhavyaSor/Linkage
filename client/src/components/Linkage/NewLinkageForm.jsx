@@ -79,7 +79,7 @@ const NewLinkageForm = (props) => {
             helperText={touched.name ? errors.name : null}
           />
         </Box>
-        {values.category === 3 ? (
+        {values.category >= 2 ? (
           <Box p={1}>
             <TextField
               margin="dense"
@@ -105,8 +105,11 @@ const NewLinkageForm = (props) => {
             <ToggleButton value={1} aria-label="Category" size="small">
               <Typography>Category</Typography>
             </ToggleButton>
-            <ToggleButton value={3} aria-label="link" size="small">
+            <ToggleButton value={2} aria-label="link" size="small">
               <Typography>Link</Typography>
+            </ToggleButton>
+            <ToggleButton value={3} aria-label="link" size="small">
+              <Typography>Note</Typography>
             </ToggleButton>
           </ToggleButtonGroup>
         </Box>
