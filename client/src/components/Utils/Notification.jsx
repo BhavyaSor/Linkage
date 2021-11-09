@@ -1,4 +1,4 @@
-import React, { useState, useEffect, memo, useImperativeHandle } from 'react';
+import React, { useState, memo, useImperativeHandle } from 'react';
 import { Snackbar, Slide } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
 

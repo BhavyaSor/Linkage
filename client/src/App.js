@@ -1,29 +1,42 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Provider as StoreProvider } from 'react-redux';
-import './App.css';
 import { ThemeProvider } from '@material-ui/core/styles';
-import MainComponent from './components/MainComponents';
+import MainComponent from './components/MainComponent';
 import { BrowserRouter } from 'react-router-dom';
-import { CssBaseline } from '@material-ui/core';
+import { CssBaseline, useMediaQuery } from '@material-ui/core';
 import { appTheme } from './theme';
 import { ConfigureStore } from './redux/ReduxStore';
-import Notification, {
-  NotificationContext,
-} from './components/Utils/Notification';
+import Notification from './components/Utils/Notification';
+import { UtilContext } from './components/Utils/UtilContext';
+
 const store = ConfigureStore();
 
 function App() {
+  const [themeType, setThemeType] = React.useState('light');
+  const darkModePreferred = useMediaQuery('(prefers-color-scheme:dark)');
+
+  useEffect(() => {
+    if (darkModePreferred) {
+      setThemeType('dark');
+    }
+  }, [darkModePreferred]);
+
+  const theme = React.useMemo(() => appTheme(themeType), [themeType]);
   const notificationRef = React.useRef();
+  const utils = {
+    notificationRef,
+    themeing: { themeType, setThemeType },
+  };
   return (
     <StoreProvider store={store}>
-      <ThemeProvider theme={appTheme}>
-        <NotificationContext.Provider value={notificationRef}>
+      <ThemeProvider theme={theme}>
+        <UtilContext.Provider value={utils}>
           <CssBaseline />
           <BrowserRouter>
-            <MainComponent isHome="true" />
+            <MainComponent isHome="true" setTheme={setThemeType} />
           </BrowserRouter>
           <Notification ref={notificationRef} />
-        </NotificationContext.Provider>
+        </UtilContext.Provider>
       </ThemeProvider>
     </StoreProvider>
   );

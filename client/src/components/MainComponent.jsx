@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { Box } from '@material-ui/core';
+import { Box, useTheme } from '@material-ui/core';
 import { Switch, withRouter, Route, Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+
 import NavBar from './Header/HeaderComponent';
 import Home from './Home/HomeComponent';
 import Linkage from './Linkage/Linkage';
@@ -15,7 +16,8 @@ const MainComponent = (props) => {
   const isCurrentPageHome = path === '/';
   const pageTitle =
     path.split('/')[1].split('-').join(' ').toUpperCase() || 'HOME';
-  const bgcolor = isCurrentPageHome ? `#3d5a80` : `#e0fbfc`;
+  const primaryColor = useTheme().palette.primary.dark;
+  const bgcolor = isCurrentPageHome ? primaryColor : null;
 
   useEffect(() => {
     if (!user.user) {

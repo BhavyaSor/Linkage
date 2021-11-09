@@ -11,9 +11,6 @@ const formikEnhancer = withFormik({
     email: Yup.string()
       .email('Invalid Email address')
       .required('Email is Required'),
-    devCode: Yup.string()
-      .required('Developer Code is Required')
-      .matches(/^\d+$/, 'Must be an integer'),
   }),
   mapPropsToValues: (props) => ({
     email: '',
@@ -21,7 +18,6 @@ const formikEnhancer = withFormik({
   }),
   handleSubmit: (values, { props, setSubmitting }) => {
     const payload = { ...values };
-    payload.devCode = parseInt(payload.devCode);
     props.signIn(payload, true);
     if (!props.user.loading) {
       setSubmitting(false);
@@ -45,75 +41,35 @@ const DevLoginForm = (props) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Grid
-        container
-        direction="column"
-        alignItems="center"
-        justify="space-evenly"
-        spacing={3}
+      <TextField
+        margin="dense"
+        id="email"
+        label="Email Address"
+        type="email"
+        fullWidth
+        error={touched.email && errors.email ? true : false}
+        value={values.email}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        helperText={errors.email}
+      />
+
+      <Button
+        variant="contained"
+        color="primary"
+        style={{ marginTop: '12px' }}
+        startIcon={
+          user.loading && isSubmitting ? (
+            <CircularProgress size={14} />
+          ) : (
+            <DeveloperModeIcon />
+          )
+        }
+        type="submit"
+        disabled={!dirty || isSubmitting}
       >
-        <Grid
-          item
-          container
-          direction="row"
-          justify="space-between"
-          alignItems="center"
-          spacing={3}
-        >
-          <Grid item xs={12} sm={6}>
-            <TextField
-              margin="dense"
-              id="email"
-              label="Email Address"
-              type="email"
-              fullWidth
-              error={touched.email && errors.email ? true : false}
-              value={values.email}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              helperText={errors.email}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              margin="dense"
-              id="devCode"
-              label="Developer Code"
-              type="text"
-              fullWidth
-              error={touched.devCode && errors.devCode ? true : false}
-              value={values.devCode}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              helperText={touched.devCode ? errors.devCode : null}
-            />
-          </Grid>
-        </Grid>
-        <Grid
-          item
-          container
-          xs={12}
-          sm={6}
-          justify="flex-start"
-          style={{ marginRight: 'auto' }}
-        >
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={
-              user.loading && isSubmitting ? (
-                <CircularProgress size={14} />
-              ) : (
-                <DeveloperModeIcon />
-              )
-            }
-            type="submit"
-            disabled={!dirty || isSubmitting}
-          >
-            Dev Login
-          </Button>
-        </Grid>
-      </Grid>
+        Dev Login
+      </Button>
     </form>
   );
 };
