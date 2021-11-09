@@ -1,0 +1,10 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #e0fbfc;
+}
+.container.home {
+  background-color: #3d5a80;
+}

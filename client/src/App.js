@@ -1,24 +1,24 @@
-import logo from './logo.svg';
+import React from 'react';
+import { Provider as StoreProvider } from 'react-redux';
 import './App.css';
+import { ThemeProvider } from '@material-ui/core/styles';
+import MainComponent from './components/MainComponents';
+import { BrowserRouter } from 'react-router-dom';
+import { CssBaseline } from '@material-ui/core';
+import { appTheme } from './theme';
+import { ConfigureStore } from './redux/ReduxStore';
+const store = ConfigureStore();
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <StoreProvider store={store}>
+      <ThemeProvider theme={appTheme}>
+        <CssBaseline />
+        <BrowserRouter>
+          <MainComponent isHome="true" />
+        </BrowserRouter>
+      </ThemeProvider>
+    </StoreProvider>
   );
 }
 
