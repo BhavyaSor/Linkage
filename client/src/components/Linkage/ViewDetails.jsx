@@ -62,13 +62,7 @@ const ViewDetails = (props) => {
             <ListItemText
               primary="Category"
               secondary={
-                category === 0
-                  ? 'Root Category'
-                  : category === 1
-                  ? 'Sub Category'
-                  : category === 2
-                  ? 'Link'
-                  : 'Note'
+                category === 1 ? 'Linkage' : category === 2 ? 'Link' : 'Note'
               }
             />
           </ListItem>

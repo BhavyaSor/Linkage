@@ -27,7 +27,6 @@ const formikEnhancer = withFormik({
     if (props.parent !== 'my-linkage') {
       payload.parent = props.parent;
     }
-    if (!payload.parent) payload.category--;
     props.addLinkage(payload);
   },
   displayName: 'New Linkage Form',

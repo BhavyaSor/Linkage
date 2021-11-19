@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { Box, Typography, Grid } from '@material-ui/core';
 import { connect, useSelector } from 'react-redux';
 import {
@@ -13,6 +13,7 @@ import {
 import LinkageToolBar from './ToolBarLinkage';
 import LinkageContainer from './ContainerLinkage';
 import Information from '../Utils/Information';
+import { UtilContext } from '../Utils/UtilContext';
 
 const mapStateToProps = (state) => {
   return {
@@ -35,6 +36,8 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const Linkage = (props) => {
+  const utils = useContext(UtilContext);
+  const notificationRef = utils.notificationRef;
   const user = useSelector((state) => state.user);
   const linkage = useSelector((state) => state.linkage);
   // const l_id = props.match.params.l_id;
@@ -50,9 +53,19 @@ const Linkage = (props) => {
     props.getLinkagePath(linkageArg);
   }, [props.match.params.l_id, user.user]);
 
+  useEffect(() => {
+    if (
+      linkage.error &&
+      linkage.error.status !== 403 &&
+      notificationRef.current
+    ) {
+      notificationRef.current.notify('error', linkage.error.message);
+    }
+  }, [linkage]);
+
   return (
     <>
-      {linkage.error ? (
+      {linkage.error && linkage.error.status === 403 ? (
         <Information
           message={
             user.user

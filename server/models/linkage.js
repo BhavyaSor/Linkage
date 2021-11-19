@@ -4,8 +4,7 @@ const linkageSchema = mongoose.Schema(
   {
     category: {
       type: Number,
-      // 0 = main category
-      // 1 = subcategory
+      // 1 = category
       // 2 = Link itself
       // 3 = notes
       required: true,
@@ -26,8 +25,15 @@ const linkageSchema = mongoose.Schema(
       },
     ],
     objData: String,
-    name: String,
+    name: {
+      type: String,
+      required: true,
+    },
     color: String,
+    isRoot: {
+      type: Boolean,
+      required: true,
+    },
   },
   { timestamps: true }
 );

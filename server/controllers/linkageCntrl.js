@@ -3,10 +3,11 @@ const Linkage = require('../models/linkage');
 const auth = require('./auth');
 const mongoose = require('mongoose');
 
+const publicAccessId = '61974a6dc6b0de4196ba89d2';
+
 exports.getLinkage = (req, res) => {
   const l_id = req.params.l_id; // linkage id;
-  const checkAccessWith =
-    auth.getUserIdFromToken(req) || '604f897f8a00f4bc663b9e8f';
+  const checkAccessWith = auth.getUserIdFromToken(req) || publicAccessId;
   this.checkIfShared(l_id, checkAccessWith).then((doc) => {
     if (doc) {
       delete doc['sharedWith'];
@@ -19,8 +20,7 @@ exports.getLinkage = (req, res) => {
 
 exports.getSubLinkages = (req, res) => {
   const l_id = req.params.l_id; // linkage id;
-  const checkAccessWith =
-    auth.getUserIdFromToken(req) || '604f897f8a00f4bc663b9e8f';
+  const checkAccessWith = auth.getUserIdFromToken(req) || publicAccessId;
   this.checkIfShared(l_id, checkAccessWith, true).then((docs) => {
     if (docs) {
       res.status(200).json(docs);
@@ -51,7 +51,7 @@ exports.checkIfShared = (l_id, withWhom, getChildren = false) => {
 exports.getRootLinkages = (req, res, next) => {
   const user_id = auth.getUserIdFromToken(req);
   if (user_id) {
-    Linkage.find({ owner: user_id, category: 0 })
+    Linkage.find({ owner: user_id, isRoot: true })
       .then((doc) => res.status(200).json(doc))
       .catch((err) => next(err));
   } else res.status(403).end('Unauthorized');
@@ -59,8 +59,7 @@ exports.getRootLinkages = (req, res, next) => {
 
 exports.getLinkagePath = async (req, res) => {
   let l_id = req.query.l_id;
-  const checkAccessWith =
-    auth.getUserIdFromToken(req) || '604f897f8a00f4bc663b9e8f';
+  const checkAccessWith = auth.getUserIdFromToken(req) || publicAccessId;
   let owner = false;
   if (!l_id) {
     owner = true;
@@ -92,12 +91,11 @@ exports.addNewLinkage = (req, res, next) => {
   const category = req.body.category;
   const parent = req.body.parent;
 
-  if ((parent && category === 0) || (category !== 0 && parent === undefined)) {
-    res
-      .status(403)
-      .end('Linkage cannot be formed due to insufficient or inconsistent data');
+  if (category === undefined) {
+    res.status(404).end('Insufficient or inconsistent data');
   } else {
     req.body.owner = auth.getUserIdFromToken(req);
+    req.body.isRoot = parent === undefined;
     const linkage = new Linkage(req.body);
     Linkage.create(linkage)
       .then((doc) => res.status(200).json(doc))
@@ -171,19 +169,29 @@ exports.editSharingDetails = (req, res, next) => {
 exports.moveLinkage = (req, res, next) => {
   const l_id = req.params.l_id;
   const to_id = req.body.toId;
-  Linkage.find({ _id: { $in: [l_id, to_id] } })
-    .then((docs) => {
-      if (docs.length !== 2) {
-        res
-          .status(403)
-          .end('Either current or future or both linkages not found');
-      } else {
-        Linkage.findByIdAndUpdate(l_id, { $set: { parent: to_id } })
-          .then((resp) => res.status(200).json({ success: true }))
-          .catch((err) => next(err));
-      }
+  if (to_id === '/') {
+    Linkage.findByIdAndUpdate(l_id, {
+      $set: { isRoot: true },
     })
-    .catch((err) => next(err));
+      .then((resp) => res.status(200).json({ success: true }))
+      .catch((err) => next(err));
+  } else {
+    Linkage.find({ _id: { $in: [l_id, to_id] } })
+      .then((docs) => {
+        if (docs.length !== 2) {
+          res
+            .status(403)
+            .end('Either current or future or both linkages not found');
+        } else {
+          Linkage.findByIdAndUpdate(l_id, {
+            $set: { parent: to_id, isRoot: false },
+          })
+            .then((resp) => res.status(200).json({ success: true }))
+            .catch((err) => next(err));
+        }
+      })
+      .catch((err) => next(err));
+  }
 };
 
 const getAllDescendants = async (parentId, includeParent = false) => {

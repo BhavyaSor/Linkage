@@ -1,6 +1,7 @@
 import * as ActionTypes from './ActionTypesUser';
 import Axios from '../apiCalls';
 import localStorageService from '../../shared/localStorageService';
+import { genErrorObject } from '../../shared/misc';
 
 const signInUserReq = () => {
   return {
@@ -28,44 +29,46 @@ const signOutUser = () => {
   };
 };
 
-const signIn = (creds, devLogin = false) => (dispatch) => {
-  dispatch(signInUserReq());
-  if (devLogin) {
-    Axios.post(`/api/user/getTestToken`, creds)
-      .then((data) => data.data)
-      .then((data) => {
-        localStorageService.setToken(data.auth_token);
-        dispatch(signInUserSuccess(data.user));
-      })
-      .catch((err) => {
-        dispatch(signInUserFailure(err?.response?.data));
-      });
-  } else {
-    // google Login
-    if (creds.error) {
-      let errMsg = creds.error;
-      errMsg = errMsg.split('_');
-      errMsg =
-        errMsg
-          .map(
-            (word) =>
-              word.charAt(0).toUpperCase() + word.substring(1).toLowerCase()
-          )
-          .join(' ') + '.';
-      dispatch(signInUserFailure(errMsg));
-    } else {
-      Axios.post(`/api/user/googleLogin`, {
-        gtoken: creds.tokenObj.id_token,
-      })
+const signIn =
+  (creds, devLogin = false) =>
+  (dispatch) => {
+    dispatch(signInUserReq());
+    if (devLogin) {
+      Axios.post(`/api/user/getTestToken`, creds)
         .then((data) => data.data)
         .then((data) => {
           localStorageService.setToken(data.auth_token);
           dispatch(signInUserSuccess(data.user));
         })
-        .catch((err) => dispatch(signInUserFailure(err.message)));
+        .catch((err) => {
+          dispatch(signInUserFailure(genErrorObject(err)));
+        });
+    } else {
+      // google Login
+      if (creds.error) {
+        let errMsg = creds.error;
+        errMsg = errMsg.split('_');
+        errMsg =
+          errMsg
+            .map(
+              (word) =>
+                word.charAt(0).toUpperCase() + word.substring(1).toLowerCase()
+            )
+            .join(' ') + '.';
+        dispatch(signInUserFailure({ message: errMsg, status: 403 }));
+      } else {
+        Axios.post(`/api/user/googleLogin`, {
+          gtoken: creds.tokenObj.id_token,
+        })
+          .then((data) => data.data)
+          .then((data) => {
+            localStorageService.setToken(data.auth_token);
+            dispatch(signInUserSuccess(data.user));
+          })
+          .catch((err) => dispatch(signInUserFailure(genErrorObject(err))));
+      }
     }
-  }
-};
+  };
 
 const signOut = () => (dispatch) => {
   dispatch(signOutUser());

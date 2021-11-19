@@ -32,7 +32,7 @@ const LinkageContainer = (props) => {
           })}
         </Grid>
       ) : (
-        <h1>{linkage.error}</h1>
+        <h1>{linkage.error?.message}</h1>
       )}
     </>
   );

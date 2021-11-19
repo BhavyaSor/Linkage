@@ -4,6 +4,7 @@ import {
   sortByDateAdded,
   sortByDateModified,
   sortByName,
+  genErrorObject,
 } from '../../shared/misc';
 
 const getLinkagesReq = () => {
@@ -111,16 +112,12 @@ const getLinkages =
       Axios.get(`/api/linkage/${parentLID}/subLinkages`)
         .then((data) => data.data)
         .then((data) => dispatch(getLinkagesSuccess(data)))
-        .catch((err) =>
-          dispatch(getLinkagesFailure(err?.response?.data || err.message))
-        );
+        .catch((err) => dispatch(getLinkagesFailure(genErrorObject(err))));
     } else {
       Axios.get(`/api/linkage/`)
         .then((data) => data.data)
         .then((data) => dispatch(getLinkagesSuccess(data)))
-        .catch((err) =>
-          dispatch(getLinkagesFailure(err?.response?.data || err.message))
-        );
+        .catch((err) => dispatch(getLinkagesFailure(genErrorObject(err))));
     }
   };
 
@@ -129,9 +126,7 @@ const addLinkage = (data) => (dispatch) => {
   Axios.post(`/api/linkage`, data)
     .then((data) => data.data)
     .then((data) => dispatch(addLinkageSuccess(data)))
-    .catch((err) =>
-      dispatch(addLinkageFailure(err?.response?.data || err.message))
-    );
+    .catch((err) => dispatch(addLinkageFailure(genErrorObject(err))));
 };
 
 const deleteLinkage = (LID) => (dispatch) => {
@@ -139,9 +134,7 @@ const deleteLinkage = (LID) => (dispatch) => {
   Axios.delete(`/api/linkage/${LID}`)
     .then((data) => data.data)
     .then((data) => dispatch(deleteLinkageSuccess(data, LID)))
-    .catch((err) =>
-      dispatch(deleteLinkageFailure(err?.response?.data || err.message))
-    );
+    .catch((err) => dispatch(deleteLinkageFailure(genErrorObject(err))));
 };
 
 const editLinkage = (LID, newdata) => (dispatch) => {
@@ -149,9 +142,7 @@ const editLinkage = (LID, newdata) => (dispatch) => {
   Axios.put(`/api/linkage/${LID}`, newdata)
     .then((data) => data.data)
     .then((data) => dispatch(editLinkageSuccess(data)))
-    .catch((err) =>
-      dispatch(editLinkageFailure(err?.response?.data || err.message))
-    );
+    .catch((err) => dispatch(editLinkageFailure(genErrorObject(err))));
 };
 
 export { getLinkages, addLinkage, deleteLinkage, editLinkage, sortLinkages };

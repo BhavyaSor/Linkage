@@ -1,5 +1,6 @@
 import * as ActionTypes from './ActionTypesLinkage';
 import Axios from '../apiCalls';
+import { genErrorObject } from '../../shared/misc';
 
 const getLinkagePathReq = () => {
   return {
@@ -28,7 +29,7 @@ const getLinkagePath =
     Axios.get(`/api/linkage/path`, { params: { l_id: LID } })
       .then((data) => data.data)
       .then((data) => dispatch(getLinkagePathSuccess(data)))
-      .catch((err) => dispatch(getLinkagePathFailure(err.message)));
+      .catch((err) => dispatch(getLinkagePathFailure(genErrorObject(err))));
   };
 
 export { getLinkagePath };

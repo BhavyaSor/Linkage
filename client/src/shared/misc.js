@@ -34,3 +34,10 @@ export const sortByDateModified =
     let time2 = new Date(l2.updatedAt);
     return (time1 - time2) * order;
   };
+
+export const genErrorObject = (err) => {
+  return {
+    status: err?.response?.status || 500,
+    message: err?.response?.data || err?.message || JSON.stringify(err),
+  };
+};
