@@ -82,6 +82,24 @@ const editLinkageFailure = (error) => {
   };
 };
 
+const moveLinkageReq = () => {
+  return {
+    type: ActionTypes.MOVE_LINKAGE_REQ,
+  };
+};
+const moveLinkageSuccess = (l_id) => {
+  return {
+    type: ActionTypes.MOVE_LINKAGE_SUCCESS,
+    payload: l_id,
+  };
+};
+const moveLinkageFailure = (error) => {
+  return {
+    type: ActionTypes.MOVE_LINKAGE_FAILURE,
+    payload: error,
+  };
+};
+
 const sortLinkages = (by, order = 1) => {
   let compartorFunc;
   by = by.toLowerCase();
@@ -145,4 +163,18 @@ const editLinkage = (LID, newdata) => (dispatch) => {
     .catch((err) => dispatch(editLinkageFailure(genErrorObject(err))));
 };
 
-export { getLinkages, addLinkage, deleteLinkage, editLinkage, sortLinkages };
+const moveLinkage = (LID, toId) => (dispatch) => {
+  dispatch(moveLinkageReq());
+  Axios.put(`/api/linkage/${LID}/move`, { toId })
+    .then((data) => dispatch(moveLinkageSuccess(LID)))
+    .catch((err) => dispatch(moveLinkageFailure(genErrorObject(err))));
+};
+
+export {
+  getLinkages,
+  addLinkage,
+  deleteLinkage,
+  editLinkage,
+  sortLinkages,
+  moveLinkage,
+};

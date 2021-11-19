@@ -51,7 +51,7 @@ const SortLinkage = (props) => {
     <>
       <Tooltip title="Sort Linkages">
         <IconButton onClick={handleMenuOpen}>
-          <SortIcon color="primary" />
+          <SortIcon color="inherit" />
         </IconButton>
       </Tooltip>
       <Popover

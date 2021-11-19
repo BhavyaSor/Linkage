@@ -98,6 +98,25 @@ export const LinkageReducer = (state = initialLinkageState, action) => {
         error: action.payload,
       };
 
+    case ActionTypes.MOVE_LINKAGE_REQ:
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case ActionTypes.MOVE_LINKAGE_SUCCESS:
+      new_linkages = [...state.linkages];
+      new_linkages = new_linkages.filter((lg) => lg._id !== action.payload);
+      return { ...state, linkages: new_linkages, error: null, loading: false };
+
+    case ActionTypes.MOVE_LINKAGE_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
+    // SORT LINKAGES
     case ActionTypes.SORT_LINKAGES:
       new_linkages = [...state.linkages];
       new_linkages = new_linkages.sort(action.payload);

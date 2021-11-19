@@ -36,8 +36,10 @@ export const sortByDateModified =
   };
 
 export const genErrorObject = (err) => {
+  let msg = err?.response?.data || err?.message || JSON.stringify(err);
+  msg = msg.slice(0, 100) + (msg.length > 100 ? '...' : '');
   return {
     status: err?.response?.status || 500,
-    message: err?.response?.data || err?.message || JSON.stringify(err),
+    message: msg,
   };
 };

@@ -34,7 +34,7 @@ const Notification = React.forwardRef((props, ref) => {
   return (
     <Snackbar
       open={config.isOpen}
-      autoHideDuration={5000}
+      autoHideDuration={2000}
       onClose={handleAlertClose}
       TransitionComponent={SlideUpTransition}
     >

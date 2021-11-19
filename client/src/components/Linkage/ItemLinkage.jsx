@@ -12,6 +12,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import FolderIcon from '@material-ui/icons/Folder';
 import FolderSharedIcon from '@material-ui/icons/FolderShared';
+import ForwardIcon from '@material-ui/icons/Forward';
 import LinkIcon from '@material-ui/icons/Link';
 import InfoIcon from '@material-ui/icons/Info';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -26,6 +27,7 @@ import EditLinkage from './EditLinkage';
 import { defaultColor } from '../../shared/misc';
 import { useSelector } from 'react-redux';
 import ShareLinkage from './ShareLinkage';
+import MoveLinkage from './MoveLinkage';
 
 const itemStyles = makeStyles((theme) => ({
   root: {
@@ -77,6 +79,7 @@ const ItemLinkage = (props) => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [editDetails, setEditDetails] = useState(false);
   const [shareItem, setShareItem] = useState(false);
+  const [moveOpen, setMoveOpen] = useState(false);
 
   const handleMenuClose = () => {
     setAnchorMenu(null);
@@ -105,6 +108,8 @@ const ItemLinkage = (props) => {
     setShareItem(false);
     props.getLinkages(parent);
   };
+
+  const closeMoveModal = () => setMoveOpen(false);
 
   return (
     <>
@@ -151,6 +156,18 @@ const ItemLinkage = (props) => {
                   <EditIcon fontSize="small" />
                 </ListItemIcon>
                 <ListItemText primary="Edit" />
+              </MenuItem>,
+              <MenuItem
+                onClick={() => {
+                  setMoveOpen(true);
+                  handleMenuClose();
+                }}
+                key={'move'}
+              >
+                <ListItemIcon style={{ minWidth: '40px' }}>
+                  <ForwardIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Move" />
               </MenuItem>,
               <MenuItem
                 onClick={() => {
@@ -215,6 +232,11 @@ const ItemLinkage = (props) => {
         shareLinkage={handleShareClick}
         linkageDetails={props.linkage}
         closeShareItemPane={handleSharePaneClose}
+      />
+      <MoveLinkage
+        linkage={props.linkage}
+        closeMoveModal={closeMoveModal}
+        open={moveOpen}
       />
     </>
   );

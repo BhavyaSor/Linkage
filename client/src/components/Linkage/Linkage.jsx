@@ -54,14 +54,16 @@ const Linkage = (props) => {
   }, [props.match.params.l_id, user.user]);
 
   useEffect(() => {
+    console.log(linkage.error?.message);
     if (
       linkage.error &&
       linkage.error.status !== 403 &&
       notificationRef.current
     ) {
+      console.log('hona to chahie');
       notificationRef.current.notify('error', linkage.error.message);
     }
-  }, [linkage]);
+  }, [linkage.error]);
 
   return (
     <>

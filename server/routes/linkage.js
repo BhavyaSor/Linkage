@@ -60,14 +60,14 @@ linkageRouter
 
 linkageRouter
   .route('/:l_id/move')
-  .post(
+  .put(
     auth.verifyUser,
     auth.verifyOwner,
     universalCtrl.validateObjectId,
     linkageCtrl.moveLinkage
   )
   .get(universalCtrl.requestNotAccepted)
-  .put(universalCtrl.requestNotAccepted)
+  .post(universalCtrl.requestNotAccepted)
   .delete(universalCtrl.requestNotAccepted);
 
 module.exports = linkageRouter;

@@ -167,6 +167,7 @@ exports.editSharingDetails = (req, res, next) => {
 };
 
 exports.moveLinkage = (req, res, next) => {
+  console.log('AAYA RE AYA');
   const l_id = req.params.l_id;
   const to_id = req.body.toId;
   if (to_id === '/') {
@@ -180,7 +181,7 @@ exports.moveLinkage = (req, res, next) => {
       .then((docs) => {
         if (docs.length !== 2) {
           res
-            .status(403)
+            .status(404)
             .end('Either current or future or both linkages not found');
         } else {
           Linkage.findByIdAndUpdate(l_id, {
