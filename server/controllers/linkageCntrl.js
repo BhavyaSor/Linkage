@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../models/user');
 const Linkage = require('../models/linkage');
 const auth = require('./auth');
 const mongoose = require('mongoose');
