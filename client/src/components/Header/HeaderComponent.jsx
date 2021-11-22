@@ -79,7 +79,7 @@ const NavBar = (props) => {
             <Box>
               <Link to="/">
                 <img
-                  src="assets/svg/logo.svg"
+                  src="assets/logo.png"
                   height="30px"
                   width="auto"
                   alt="Logo"

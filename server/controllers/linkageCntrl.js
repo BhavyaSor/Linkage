@@ -167,7 +167,6 @@ exports.editSharingDetails = (req, res, next) => {
 };
 
 exports.moveLinkage = (req, res, next) => {
-  console.log('AAYA RE AYA');
   const l_id = req.params.l_id;
   const to_id = req.body.toId;
   if (to_id === '/') {
