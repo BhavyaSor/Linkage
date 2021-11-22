@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 // prettier-ignore
 import { Button, Dialog, useTheme, makeStyles, useMediaQuery, DialogTitle, DialogContent, DialogActions,Slide, Snackbar, Grid } from '@material-ui/core';
 import { useSelector } from 'react-redux';
-// import GoogleLogin from 'react-google-login';
-import axios from 'axios';
-import { apiUrl, ENV } from '../../shared/envVars';
+import GoogleLogin from 'react-google-login';
+import { ENV } from '../../shared/envVars';
 import DevLoginForm from './DevLoginForm';
 
 const SlideDownTransition = React.forwardRef((props, ref) => {
@@ -59,7 +58,7 @@ const SignInComponent = (props) => {
               style={{ width: 'fit-content' }}
             >
               <Grid item>
-                {/* <GoogleLogin
+                <GoogleLogin
                   clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
                   buttonText="Sign In with Google"
                   onSuccess={(resp) => {
@@ -67,12 +66,12 @@ const SignInComponent = (props) => {
                     props.handleModal(false);
                   }}
                   onFailure={(resp) => {
+                    console.log(resp);
                     props.signIn(resp);
-                    // setModalOpen(false);
                     props.handleModal(false);
                   }}
                   cookiePolicy={'single_host_origin'}
-                /> */}
+                />
               </Grid>
             </Grid>
             {ENV === 'DEVELOPMENT' ? (

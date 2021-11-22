@@ -2,8 +2,53 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const Linkage = require('../models/linkage');
 const sendError = require('./errorControl');
+const { OAuth2Client } = require('google-auth-library');
 
+const GC_ID = process.env.GOOGLE_CLIENT_ID;
 const jwtSecret = process.env.JWT_SECRET;
+const client = new OAuth2Client(GC_ID);
+
+exports.googleLogin = (req, res) => {
+  const { gtoken } = req.body;
+  client
+    .verifyIdToken({ idToken: gtoken, audience: GC_ID })
+    .then((response) => {
+      const { email_verified, email, name } = response.payload;
+      if (email_verified) {
+        User.findOne({ email: email }, (err, user) => {
+          if (err) {
+            sendError(400, 'Something Went Wrong finding details in DB...')(
+              req,
+              res
+            );
+          } else if (user) {
+            console.log('Exists');
+            const { _id, name, email } = user;
+            res.status(200).json({
+              auth_token: generateToken(user),
+              user: { _id, name, email },
+            });
+          } else {
+            console.log('New');
+            let newUser = new User({ email, name });
+            newUser
+              .save()
+              .then((user) => {
+                res.status(200).json({
+                  auth_token: generateToken(user),
+                  user: user,
+                });
+              })
+              .catch((err) =>
+                res.status(400).json({
+                  error: 'Something Went Wrong creating user in DB...',
+                })
+              );
+          }
+        });
+      }
+    });
+};
 
 function generateToken(user) {
   var token = jwt.sign({ _id: user._id }, jwtSecret, { expiresIn: '1h' });
@@ -90,6 +135,6 @@ exports.getTestToken = (req, res) => {
         user,
         auth_token: generateToken(user),
       });
-    } else res.status(406).end('User Not Found');
+    } else sendError(406, 'User not found')(req, res);
   });
 };

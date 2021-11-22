@@ -5,7 +5,9 @@ require('dotenv/config');
 
 const port = process.env.PORT || 8000;
 const dbUrl =
-  process.env.NODE_ENV === 'PROD' ? '' : 'mongodb://127.0.0.1:27017/Linkage';
+  process.env.NODE_ENV === 'PROD'
+    ? process.env.PROD_MONGO_URI
+    : 'mongodb://127.0.0.1:27017/Linkage';
 const app = express();
 
 mongoose

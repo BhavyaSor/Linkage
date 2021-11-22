@@ -8,4 +8,9 @@ userRouter
   .get(auth.refreshUser)
   .all(universalCtrl.requestNotAccepted);
 
+userRouter
+  .route('/googleLogin')
+  .post(auth.googleLogin)
+  .all(universalCtrl.requestNotAccepted);
+
 module.exports = userRouter;
