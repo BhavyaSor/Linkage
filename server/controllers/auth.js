@@ -28,6 +28,21 @@ function verifyToken(headers) {
   }
 }
 
+// if token is valid, return user details
+exports.refreshUser = (req, res, next) => {
+  try {
+    var user_id = verifyToken(req.headers);
+    User.findById(user_id, (err, user) => {
+      if (err) next(err);
+      else {
+        res.status(200).json(user);
+      }
+    });
+  } catch (err) {
+    sendError(403, 'Token expired! Login Again')(req, res);
+  }
+};
+
 exports.verifyUser = (req, res, next) => {
   try {
     var user_id = verifyToken(req.headers);

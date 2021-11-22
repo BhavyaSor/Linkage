@@ -46,7 +46,7 @@ const NavBar = (props) => {
       setModalOpen(false);
       let severity = user.error ? 'error' : user.user ? 'success' : 'info';
       let msg = user.error
-        ? `${user.error.message} Try Again!`
+        ? `${user.error.message}`
         : user.user
         ? 'Successfull SignIn!'
         : 'Logout Successfull!';

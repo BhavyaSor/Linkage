@@ -70,10 +70,18 @@ const signIn =
     }
   };
 
+const refreshUser = () => (dispatch) => {
+  dispatch(signInUserReq());
+  Axios.get('/api/user/refreshUser')
+    .then((data) => data.data)
+    .then((user) => dispatch(signInUserSuccess(user)))
+    .catch((err) => dispatch(signInUserFailure(genErrorObject(err))));
+};
+
 const signOut = () => (dispatch) => {
   dispatch(signOutUser());
   // localStorage.removeItem('auth_token');
   localStorageService.clearToken();
 };
 
-export { signIn, signOut };
+export { signIn, signOut, refreshUser };

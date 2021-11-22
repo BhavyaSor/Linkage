@@ -1,17 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import { Box, useTheme } from '@material-ui/core';
 import { Switch, withRouter, Route, Redirect } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import NavBar from './Header/HeaderComponent';
 import Home from './Home/HomeComponent';
 import Linkage from './Linkage/Linkage';
 import localStorageService from '../shared/localStorageService';
+import { refreshUser } from '../redux/actions';
 
 import '../styles/mainPage.css';
 
 const MainComponent = (props) => {
   const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const path = props.location.pathname;
   const isCurrentPageHome = path === '/';
   const pageTitle =
@@ -19,11 +21,9 @@ const MainComponent = (props) => {
   const primaryColor = useTheme().palette.primary.dark;
   const bgcolor = isCurrentPageHome ? primaryColor : null;
 
-  useEffect(() => {
-    if (!user.user) {
-      localStorageService.clearToken();
-    }
-  }, [user]);
+  useLayoutEffect(() => {
+    dispatch(refreshUser());
+  }, []);
 
   return (
     <>
