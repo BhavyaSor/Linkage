@@ -10,6 +10,7 @@ import localStorageService from '../shared/localStorageService';
 import { refreshUser } from '../redux/actions';
 
 import '../styles/mainPage.css';
+import NotFound404 from './NotFound404';
 
 const MainComponent = (props) => {
   const user = useSelector((state) => state.user);
@@ -52,6 +53,7 @@ const MainComponent = (props) => {
               <Redirect to="/linkage/my-linkage" />
             </Route>
             <Route path="/linkage/:l_id" component={Linkage} />
+            <Route component={NotFound404} />
           </Switch>
         </Box>
       </Box>

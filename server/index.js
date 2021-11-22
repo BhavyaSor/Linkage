@@ -25,6 +25,12 @@ app.use(express.json());
 app.use('/api/user', require('./routes/user'));
 app.use('/api/linkage', require('./routes/linkage'));
 
+app.get('/', (req, res) =>
+  res.status(200).end('Hello! Welcome to Linkage API')
+);
+
+app.get('*', (req, res) => res.status(404).end('Requested Page not found'));
+
 app.listen(port, () => {
   console.log(`Listening at ${port}`);
 });
