@@ -3,38 +3,52 @@ const Linkage = require('../models/linkage');
 const auth = require('./auth');
 const mongoose = require('mongoose');
 
-const publicAccessId = '61974a6dc6b0de4196ba89d2';
+let publicAccessId = '';
+
+User.findOne({ email: '*' })
+  .then((puser) => {
+    publicAccessId = puser._id;
+    console.log(publicAccessId);
+  })
+  .catch((er) => console.log('PUBLIC ACCESS USER NOT PRESENT', er));
 
 exports.getLinkage = (req, res) => {
   const l_id = req.params.l_id; // linkage id;
+  console.log('-->', publicAccessId);
   const checkAccessWith = auth.getUserIdFromToken(req) || publicAccessId;
-  this.checkIfShared(l_id, checkAccessWith).then((doc) => {
-    if (doc) {
-      delete doc['sharedWith'];
-      res.status(200).json(doc);
-    } else {
-      res.status(403).end('Unauthorized');
-    }
-  });
+  this.checkIfShared(l_id, checkAccessWith)
+    .then((doc) => {
+      if (doc) {
+        delete doc['sharedWith'];
+        res.status(200).json(doc);
+      } else {
+        res.status(403).end('Unauthorized');
+      }
+    })
+    .catch((err) => res.status(400).end(JSON.stringify(err)));
 };
 
 exports.getSubLinkages = (req, res) => {
   const l_id = req.params.l_id; // linkage id;
   const checkAccessWith = auth.getUserIdFromToken(req) || publicAccessId;
-  this.checkIfShared(l_id, checkAccessWith, true).then((docs) => {
-    if (docs) {
-      res.status(200).json(docs);
-    } else {
-      res.status(403).end('Unauthorized');
-    }
-  });
+  this.checkIfShared(l_id, checkAccessWith, true)
+    .then((docs) => {
+      if (docs) {
+        res.status(200).json(docs);
+      } else {
+        res.status(403).end('Unauthorized');
+      }
+    })
+    .catch((err) => res.status(400).end(JSON.stringify(err)));
 };
 
 exports.checkIfShared = (l_id, withWhom, getChildren = false) => {
   return new Promise((resolve, reject) => {
     Linkage.findById(l_id, (err, doc) => {
       if (err) reject(err);
-      else if (doc.sharedWith.includes(withWhom) || doc.owner == withWhom) {
+      else if (!doc) {
+        reject('Linkage Not Found');
+      } else if (doc.sharedWith.includes(withWhom) || doc.owner == withWhom) {
         if (getChildren) {
           Linkage.find({
             parent: doc._id,
