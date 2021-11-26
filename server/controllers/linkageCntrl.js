@@ -80,7 +80,7 @@ exports.getRootLinkages = (req, res, next) => {
 
 exports.getLinkagePath = async (req, res) => {
   let l_id = req.query.l_id;
-  const checkAccessWith = auth.getUserIdFromToken(req) || publicAccessId;
+  const checkAccessWith = auth.getUserIdFromToken(req);
   let owner = false;
   if (!l_id) {
     owner = true;
@@ -92,7 +92,8 @@ exports.getLinkagePath = async (req, res) => {
       if (linkage.owner == checkAccessWith) owner = true;
       if (
         linkage.owner == checkAccessWith ||
-        linkage.sharedWith.includes(checkAccessWith)
+        linkage.sharedWith.includes(checkAccessWith) ||
+        linkage.sharedWith.includes(publicAccessId)
       ) {
         let info = {};
         info._id = linkage._id;
