@@ -15,7 +15,7 @@ User.findOne({ email: '*' })
 exports.getLinkage = (req, res) => {
   const l_id = req.params.l_id; // linkage id;
   console.log('-->', publicAccessId);
-  const checkAccessWith = auth.getUserIdFromToken(req);
+  const checkAccessWith = auth.getUserIdFromToken(req) || publicAccessId;
   this.checkIfShared(l_id, checkAccessWith)
     .then((doc) => {
       if (doc) {
@@ -30,7 +30,7 @@ exports.getLinkage = (req, res) => {
 
 exports.getSubLinkages = (req, res) => {
   const l_id = req.params.l_id; // linkage id;
-  const checkAccessWith = auth.getUserIdFromToken(req);
+  const checkAccessWith = auth.getUserIdFromToken(req) || publicAccessId;
   this.checkIfShared(l_id, checkAccessWith, true)
     .then((docs) => {
       if (docs) {
@@ -58,7 +58,7 @@ exports.checkIfShared = (l_id, withWhom, getChildren = false) => {
             parent: doc._id,
             $or: [
               { owner: withWhom },
-              { sharedWith: { $all: [withWhom, publicAccessId] } },
+              { sharedWith: { $in: [withWhom, publicAccessId] } },
             ],
           })
             .then((docs) => resolve(docs))
@@ -80,7 +80,7 @@ exports.getRootLinkages = (req, res, next) => {
 
 exports.getLinkagePath = async (req, res) => {
   let l_id = req.query.l_id;
-  const checkAccessWith = auth.getUserIdFromToken(req);
+  const checkAccessWith = auth.getUserIdFromToken(req) || publicAccessId;
   let owner = false;
   if (!l_id) {
     owner = true;
