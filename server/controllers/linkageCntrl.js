@@ -15,7 +15,7 @@ User.findOne({ email: '*' })
 exports.getLinkage = (req, res) => {
   const l_id = req.params.l_id; // linkage id;
   console.log('-->', publicAccessId);
-  const checkAccessWith = auth.getUserIdFromToken(req) || publicAccessId;
+  const checkAccessWith = auth.getUserIdFromToken(req);
   this.checkIfShared(l_id, checkAccessWith)
     .then((doc) => {
       if (doc) {
@@ -30,7 +30,7 @@ exports.getLinkage = (req, res) => {
 
 exports.getSubLinkages = (req, res) => {
   const l_id = req.params.l_id; // linkage id;
-  const checkAccessWith = auth.getUserIdFromToken(req) || publicAccessId;
+  const checkAccessWith = auth.getUserIdFromToken(req);
   this.checkIfShared(l_id, checkAccessWith, true)
     .then((docs) => {
       if (docs) {
@@ -48,11 +48,18 @@ exports.checkIfShared = (l_id, withWhom, getChildren = false) => {
       if (err) reject(err);
       else if (!doc) {
         reject('Linkage Not Found');
-      } else if (doc.sharedWith.includes(withWhom) || doc.owner == withWhom) {
+      } else if (
+        doc.sharedWith.includes(withWhom) ||
+        doc.sharedWith.includes(publicAccessId) ||
+        doc.owner == withWhom
+      ) {
         if (getChildren) {
           Linkage.find({
             parent: doc._id,
-            $or: [{ owner: withWhom }, { sharedWith: { $all: [withWhom] } }],
+            $or: [
+              { owner: withWhom },
+              { sharedWith: { $all: [withWhom, publicAccessId] } },
+            ],
           })
             .then((docs) => resolve(docs))
             .catch((err) => reject(err));
@@ -101,7 +108,7 @@ exports.getLinkagePath = async (req, res) => {
   res.status(200).json({ owner, path });
 };
 
-exports.addNewLinkage = (req, res, next) => {
+exports.addNewLinkage = async (req, res, next) => {
   const category = req.body.category;
   const parent = req.body.parent;
 
@@ -110,10 +117,17 @@ exports.addNewLinkage = (req, res, next) => {
   } else {
     req.body.owner = auth.getUserIdFromToken(req);
     req.body.isRoot = parent === undefined;
-    const linkage = new Linkage(req.body);
-    Linkage.create(linkage)
-      .then((doc) => res.status(200).json(doc))
-      .catch((err) => next(err));
+    try {
+      if (parent) {
+        let parentLinkage = await Linkage.findById(parent);
+        const linkage = new Linkage(req.body);
+        linkage.sharedWith = [...parentLinkage.sharedWith];
+        const doc = await Linkage.create(linkage);
+        res.status(200).json(doc);
+      }
+    } catch (err) {
+      next(err);
+    }
   }
 };
 
