@@ -117,12 +117,18 @@ exports.addNewLinkage = async (req, res, next) => {
     res.status(404).end('Insufficient or inconsistent data');
   } else {
     req.body.owner = auth.getUserIdFromToken(req);
-    req.body.isRoot = parent === undefined;
+    const isRoot = parent === undefined;
+    req.body.isRoot = isRoot;
     try {
-      if (parent) {
+      if (!isRoot) {
         let parentLinkage = await Linkage.findById(parent);
+        if (!parentLinkage) throw new Error('Linkage not found');
         const linkage = new Linkage(req.body);
         linkage.sharedWith = [...parentLinkage.sharedWith];
+        const doc = await Linkage.create(linkage);
+        res.status(200).json(doc);
+      } else {
+        const linkage = new Linkage(req.body);
         const doc = await Linkage.create(linkage);
         res.status(200).json(doc);
       }
